@@ -54,7 +54,7 @@ The project follows a standard machine learning pipeline:
 
 To run this project, you need to:
 
-1.  Clone the repository from GitHub.
+1.  Clone the repository from GitHub. https://github.com/Talha4543/Car-Price-Predictor-Project.git
     
 2.  Install the required Python packages listed in the requirements.txt file.
     
