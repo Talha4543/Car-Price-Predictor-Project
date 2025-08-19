@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Price Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h2><i class="fas fa-car"></i> Car Price Predictor</h2>
+    <p style="text-align:center; margin-bottom:20px; color:#555;">
+      Enter the details below and predict your car’s selling price instantly 🚗
+    </p>
+
+    <!-- Form -->
+    <form method="post" accept-charset="utf-8" name="Modelform" onsubmit="send_data(); return false;">
+      
+      <!-- Company -->
+      <div class="form-group">
+        <label for="company">Select Company:</label>
+        <select id="company" name="company" required 
+                onchange="load_car_models(this.id,'car_models')">
+          {% for company in companies %}
+          <option value="{{ company }}">{{ company }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Car Models -->
+      <div class="form-group">
+        <label for="car_models">Select Model:</label>
+        <select id="car_models" name="car_models" required></select>
+      </div>
+
+      <!-- Year -->
+      <div class="form-group">
+        <label for="year">Select Year of Purchase:</label>
+        <select id="year" name="year" required>
+          {% for year in years %}
+          <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Fuel -->
+      <div class="form-group">
+        <label for="fuel_type">Select Fuel Type:</label>
+        <select id="fuel_type" name="fuel_type" required>
+          {% for fuel in fuel_types %}
+          <option value="{{ fuel }}">{{ fuel }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- KMs Driven -->
+      <div class="form-group">
+        <label for="kilo_driven">Kilometres Driven:</label>
+        <input type="number" id="kilo_driven" name="kilo_driven" placeholder="Enter kms driven" required>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <button type="submit"><i class="fas fa-calculator"></i> Predict Price</button>
+      </div>
+    </form>
+
+    <!-- Prediction -->
+    <div id="prediction"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function load_car_models(company_id,car_model_id) {
+      var company = document.getElementById(company_id);
+      var car_model= document.getElementById(car_model_id);
+      car_model.value="";
+      car_model.innerHTML="";
+      {% for company in companies %}
+          if(company.value == "{{ company }}") {
+              {% for model in car_models %}
+                  {% if company in model %}
+                      var newOption= document.createElement("option");
+                      newOption.value="{{ model }}";
+                      newOption.innerHTML="{{ model }}";
+                      car_model.options.add(newOption);
+                  {% endif %}
+              {% endfor %}
+          }
+      {% endfor %}
+    }
+
+    function send_data() {
+      var fd = new FormData(document.querySelector('form'));
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST','/predict',true);
+      document.getElementById('prediction').innerHTML="⏳ Wait! Predicting Price...";
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == XMLHttpRequest.DONE){
+          try {
+            let response = JSON.parse(xhr.responseText);
+            if(response.status === "success"){
+              document.getElementById('prediction').innerHTML = 
+                `✅ Prediction: ₹${response.predicted_price}`;
+            } else {
+              document.getElementById('prediction').innerHTML = 
+                `❌ Error: ${response.message}`;
+            }
+          } catch {
+            document.getElementById('prediction').innerHTML = 
+              "❌ Unexpected error!";
+          }
+        }
+      };
+      xhr.send(fd);
+    }
+  </script>
+
+</body>
+</html>
