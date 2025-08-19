@@ -1,4 +1,5 @@
 # Car-Price-Predictor-Project
+![image alt](https://github.com/Talha4543/Car-Price-Predictor-Project/blob/6243b41a6ee53a1437ae7299348ac75edc55ea88/1.PNG)
 Car Price Predictor Project Report
 ----------------------------------
 
